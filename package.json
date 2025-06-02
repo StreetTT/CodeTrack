@@ -12,12 +12,58 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "CodeTrack",
+      "properties": {
+        "codetrack.notionSecret": {
+          "type": "string",
+          "default": "",
+          "description": "Notion integration secret token. You can get it from your Notion integration settings.",
+          "scope": "user"
+        },
+        "codetrack.trackingDatabaseURL": {
+          "type": "string",
+          "default": "",
+          "description": "Notion integration tracking database url. Pages will be created in this database to log coding sessions.",
+          "scope": "user"
+        },
+        "codetrack.autoStartOnVSCode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically start tracking when VS Code starts",
+          "scope": "user"
+        }
+      }
+    },
     "commands": [
       {
-        "command": "codetrack.helloWorld",
-        "title": "Hello World"
+        "command": "codetrack.startSession",
+        "title": "CodeTrack: Start Session"
+      },
+      {
+        "command": "codetrack.endSession",
+        "title": "CodeTrack: End Session"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codetrack-sidebar",
+          "title": "CodeTrack",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "codetrack-sidebar": [
+        {
+          "id": "codetrack-view",
+          "name": "CodeTrack",
+          "type": "webview",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

@@ -1,25 +1,72 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { SidebarProvider } from './SidebarProvider';
+
+let sessionInProgress = false;
 
 // This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "codetrack" is now active!');
+	const config = vscode.workspace.getConfiguration('codetrack');
+    const notionSecret = config.get('notionSecret', '');
+    const trackingDatabaseURL = config.get('trackingDatabaseURL', '');
+	const autoStartOnVSCode = config.get('autoStartOnVSCode', false);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('codetrack.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from CodeTrack!');
+	// // Check if the Notion secret and tracking database are set
+	// if (!notionSecret || !trackingDatabaseURL) {
+	// 	vscode.window.showErrorMessage('Please set your Notion secret and tracking database in the settings.');
+	// 	return;
+	// }
+
+	// Auto-start if enabled
+    if (autoStartOnVSCode) {
+        vscode.commands.executeCommand('codetrack.startSession');
+    }
+
+	// Watch for configuration changes
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('codetrack')) {
+                // Reload configuration
+                const config = vscode.workspace.getConfiguration('codetrack');
+				const notionSecret = config.get('notionSecret', '');
+				const trackingDatabaseURL = config.get('trackingDatabaseURL', '');
+				const autoStartOnVSCode = config.get('autoStartOnVSCode', false);
+            }
+        })
+    );
+
+	let startSession = vscode.commands.registerCommand('codetrack.startSession', () => {
+		if (sessionInProgress) {
+			vscode.window.showWarningMessage('A coding session is already in progress.');
+			return;
+		}
+		
+		sessionInProgress = true;
+		vscode.window.showInformationMessage('Started tracking your coding session');
 	});
 
-	context.subscriptions.push(disposable);
+	let endSession = vscode.commands.registerCommand('codetrack.endSession', () => {
+		if (!sessionInProgress) {
+			vscode.window.showWarningMessage('No coding session is currently in progress.');
+			return;
+		}
+
+		sessionInProgress = false;
+		vscode.window.showInformationMessage('Ended tracking your coding session');
+	});
+
+	context.subscriptions.push(startSession);
+	context.subscriptions.push(endSession);
+
+	const sidebarProvider = new SidebarProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(
+			"codetrack-view",
+			sidebarProvider
+		)
+	);
 }
 
 // This method is called when your extension is deactivated
