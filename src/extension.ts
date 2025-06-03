@@ -122,7 +122,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Auto-start if enabled
 	if (autoStartOnVSCode) {
-		vscode.commands.executeCommand('codetrack.startSession');
+		vscode.commands.executeCommand('codetrack.startSession', 'Auto-Started Session');
 	}
 
 	// Watch for configuration changes
@@ -137,7 +137,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let startSession = vscode.commands.registerCommand('codetrack.startSession', async (customTitle: string) => {
 		// Check if the Notion secret and tracking database are set
-		if (!notionSecret || !trackingDatabaseID) {
+		if (!(notionSecret && trackingDatabaseID)) {
 			vscode.window.showErrorMessage('Please set your Notion secret and tracking database in the settings.');
 			return;
 		}

@@ -1,7 +1,7 @@
 {
   "name": "codetrack",
   "displayName": "CodeTrack",
-  "description": "Track Coding Session and log them in Notion",
+  "description": "Track Coding Sessions and log them in Notion",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.100.0"
@@ -9,7 +9,10 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:codetrack-sidebar.codetrack-view"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {

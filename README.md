@@ -1,71 +1,108 @@
-# codetrack README
+# CodeTrack
 
-This is the README for your extension "codetrack". After writing up a brief description, we recommend including the following sections.
+Track your coding sessions seamlessly with Notion integration in VS Code.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+CodeTrack helps you maintain a detailed log of your coding sessions by automatically recording:
 
-For example if there is an image subfolder under your extension project workspace:
+- Session start and end times
+- Custom session titles
+- Session status tracking
+- Direct integration with Notion
 
-\!\[feature X\]\(images/feature-x.png\)
+![CodeTrack Sidebar](resources/sidebar.png)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+> The extension provides a convenient sidebar interface for managing your coding sessions.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Visual Studio Code ^1.100.0
+- Notion account with integration token
+- Notion database with required properties:
+  - Name (title)
+  - Time (date)
+  - Status (select)
+
+## Setup
+
+1. Install the extension
+2. Get your Notion integration token from [Notion Integrations](https://www.notion.so/my-integrations)
+3. Create a tracking database in Notion
+4. Share your database with the integration
+5. Configure the extension settings
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* `codetrack.notionSecret`: Your Notion integration secret token
+* `codetrack.trackingDatabaseURL`: URL of your Notion tracking database
+* `codetrack.autoStartOnVSCode`: Enable/disable auto-start of a session when VS Code launches
 
-## Known Issues
+## Usage
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+### Sidebar Interface
+
+1. Click the CodeTrack icon in the activity bar
+2. Enter an optional session title
+3. Use "Start Session" and "End Session" buttons to control tracking
+
+### Commands
+
+Available commands:
+- `CodeTrack: Start Session`
+- `CodeTrack: End Session`
+
+## Future Updates
+
+- Linking to Projects
+- Variably effect other database columns
+- Sessions end when VSCode is closed
+- Sensing the start and end of a Session
+- Multi Session Support
+- Editing Page Info from VSCode
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+Initial release with:
+- Basic session tracking
+- Notion integration
+- Sidebar interface
+- Auto-start functionality
 
-Initial release of ...
+## Following Extension Guidelines
 
-### 1.0.1
+This extension follows the [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines) for VS Code.
 
-Fixed issue #.
+## Development
 
-### 1.1.0
+```bash
+# Install dependencies
+npm install
 
-Added features X, Y, and Z.
+# Compile
+npm run compile
+
+# Watch for changes
+npm run watch
+
+# Run tests
+npm run test
+```
+
+For debugging, open Developer Tools in VS Code (Help > Toggle Developer Tools).
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This extension is released under the MIT License.
 
 ---
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Enjoy tracking your coding sessions!**
