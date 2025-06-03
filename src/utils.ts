@@ -67,6 +67,7 @@ async function MakeRequest({
         console.log(`[CodeTrack] ${res.status} | ${method} | ${url.replace('https://', '').split('/')[0]} | ${message}`);
 
         if (!res.ok) {
+            console.error(`[CodeTrack] Error: ${await res.text()}`);
             throw new Error(`HTTP error! status: ${res.status}`);
         }
 

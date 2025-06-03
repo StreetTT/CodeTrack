@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let autoStartOnVSCode: boolean = false;
 	let trackingDatabaseID: string = '';
 
-	let startDate: Date | null = null;
+	let startDate: Date| null = null;
 	let endDate: Date | null = null;
 	let title: string = '';
 	let sessionPageID: string | false = '';
@@ -65,6 +65,9 @@ export function activate(context: vscode.ExtensionContext) {
 	async function UpdateNotionProperties(sessionPageID: string): Promise<boolean> {
 		// Create the properties object with date fields
 		let propertiesObj: any = {
+			Name: {
+				title: [{text: { content: title }}]
+			},
 			Time: {
 				date: {},
 			},
@@ -132,7 +135,7 @@ export function activate(context: vscode.ExtensionContext) {
         })
     );
 
-	let startSession = vscode.commands.registerCommand('codetrack.startSession', async () => {
+	let startSession = vscode.commands.registerCommand('codetrack.startSession', async (customTitle: string) => {
 		// Check if the Notion secret and tracking database are set
 		if (!notionSecret || !trackingDatabaseID) {
 			vscode.window.showErrorMessage('Please set your Notion secret and tracking database in the settings.');
@@ -152,7 +155,7 @@ export function activate(context: vscode.ExtensionContext) {
 			cancellable: false
 		}, async (progress) => {
 			// Create a new Notion page for the session
-			title = `Coding Session - ${new Date().toLocaleString()}`;
+			title = customTitle ;
 			startDate = new Date();
 			endDate = null;
 			sessionPageID = await CreateNotionPage(title, trackingDatabaseID)
@@ -168,6 +171,13 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 
+			// Update sidebar placeholder with current title
+			if (sidebarProvider) {
+				sidebarProvider.updatePlaceholder(title);
+			}
+
+			// Notify the user that the session has started
+			console.log(`[CodeTrack] Session started: ${title}`);
 			sessionInProgress = true;
 			vscode.window.showInformationMessage(
 				'Started tracking your coding session', 
@@ -181,7 +191,7 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 
-	let endSession = vscode.commands.registerCommand('codetrack.endSession', async () => {
+	let endSession = vscode.commands.registerCommand('codetrack.endSession', async (customTitle: string) => {
 		// Check if the Notion secret and tracking database are set
 		if (!notionSecret || !trackingDatabaseID) {
 			vscode.window.showErrorMessage('Please set your Notion secret and tracking database in the settings.');
@@ -206,6 +216,7 @@ export function activate(context: vscode.ExtensionContext) {
 				vscode.window.showErrorMessage('Session page ID is not set. Please start a session first.');
 				return;
 			}
+			title = customTitle;
 			const updateSuccess = await UpdateNotionProperties(sessionPageID);
 			if (!updateSuccess) {
 				vscode.window.showErrorMessage('Failed to update the session page in Notion.');
