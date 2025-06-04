@@ -19,6 +19,11 @@ button {
 button:hover {
     background: var(--vscode-button-hoverBackground);
 }
+button:disabled {
+    background: var(--vscode-button-disabledBackground);
+    color: var(--vscode-button-disabledForeground);
+    cursor: not-allowed;
+}
 input[type="text"] {
     border: 1px solid var(--vscode-input-border);
     background: var(--vscode-input-background);

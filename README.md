@@ -53,6 +53,31 @@ CodeTrack can be customized to work with your specific Notion database structure
    - Select your project relation property
 4. Save your settings
 
+## Notion Templates
+
+The bare minimum one need to use CodeTrack is 2 databases - one relating to the other as well as having a date/time
+property - but you can save time by using this template which I use myself and recommend:
+
+### Basic Time Tracking Template
+
+This template includes:
+- A Github style Heatmap
+- Project + Sessions Database's to aid project organisation
+- Goal Database to encourage consistency
+- Analytics to show how long spent coding
+
+[Download Template](https://phantom-piranha-8ce.notion.site/Coding-Workspace-7368ee7e3c444c8593f8019fbfa77a42)
+
+Thank you [JameelCodes](https://www.youtube.com/@JameelCodes) for this brilliant template
+### Using Templates
+
+1. Duplicate the template to your Notion workspace
+2. Share the page with your integration
+3. Configure CodeTrack to use the **Session** database URL
+4. Map the properties in the extension settings
+
+> **Note:** You can always create your own database from scratch with just the minimal required fields (title and date), then expand it as needed for your workflow.
+
 ## Usage
 
 ### Sidebar Interface

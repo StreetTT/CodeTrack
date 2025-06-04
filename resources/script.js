@@ -127,6 +127,7 @@ try {
         
         // Now attach event listeners to DOM elements
         const startButton = document.getElementById('startSessionBtn');
+        const endButton = document.getElementById('endSessionBtn');
         if (startButton) {
             startButton.addEventListener('click', () => {
                 wv_log('Start Session button pressed');
@@ -136,12 +137,13 @@ try {
                 }
                 project = document.getElementById('project').value;
                 document.getElementById('project').disabled = true;
+                startButton.disabled = true;
+                endButton.disabled = false;
                 vscode.postMessage({ command: 'startSession', title: title, project: project });
                 document.getElementById('title').placeholder = title;
             });
         }
 
-        const endButton = document.getElementById('endSessionBtn');
         if (endButton) {
             endButton.addEventListener('click', () => {
                 wv_log('End Session button pressed');
@@ -150,7 +152,8 @@ try {
                 document.getElementById('title').value = '';
                 document.getElementById('title').placeholder = '';
                 document.getElementById('project').disabled = false;
-
+                startButton.disabled = true;
+                endButton.disabled = false;
             });
         }
 
