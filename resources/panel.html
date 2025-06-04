@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+    <link href="${styleUri}" rel="stylesheet" nonce="${nonce}">
+    <title>CodeTrack Settings</title>
+</head>
+<body>
+    <h1>CodeTrack Settings</h1>
+
+    <label for="projectProperty">Project Property:</label>
+    <select id="projectProperty"></select>
+
+    <label for="timeProperty">Time Property:</label>
+    <select id="timeProperty"></select>
+
+    <button id="saveSettingsBtn">Save Settings</button>
+
+    <script nonce="${nonce}" src="${scriptUri}"></script>
+</body>
+</html>

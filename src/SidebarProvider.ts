@@ -1,7 +1,18 @@
 import * as vscode from 'vscode';
+import { GetHtmlForWebview, log, logError } from './utils';
+function sb_log(message: string) {
+    log(`[Sidebar] ${message}`);
+}
+
+function sb_logError(message: string) {
+    logError(`[Sidebar] ${message}`);
+}
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
+    private _properties: { [key: string]: string } = {};
+    private _webviewReady: boolean = false;
+    private _pendingMessages: Array<any> = [];
 
     constructor(private readonly _extensionUri: vscode.Uri) {}
 
@@ -17,12 +28,39 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             localResourceRoots: [this._extensionUri],
         };
 
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-        
+        try {
+            webviewView.webview.html = GetHtmlForWebview(webviewView.webview, this._extensionUri, 'sidebar.html');
+        } catch (error) {
+            sb_logError('Error setting webview HTML: ' + error);
+        }
+
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.command) {
+                case 'webviewReady':
+                    sb_log('Webview is ready');
+                    this._webviewReady = true;
+                    // Send any pending messages
+                    if (this._pendingMessages.length > 0) {
+                        sb_log(`Sending ${this._pendingMessages.length} pending messages`);
+                        this._pendingMessages.forEach(msg => {
+                            if (!this._view) {
+                                sb_logError('Webview view is not available to send messages'); 
+                                return;
+                            }
+                            // Ensure the webview is ready before sending messages
+                            this._view.webview.postMessage(msg);
+                        });
+                        this._pendingMessages = [];
+                    }
+                    break;
+                case 'log':
+                    sb_log(data.text);
+                    break;
+                case 'logError':
+                    sb_logError(data.text);
+                    break;
                 case 'startSession':
-                    await vscode.commands.executeCommand('codetrack.startSession', data.title);
+                    await vscode.commands.executeCommand('codetrack.startSession', data.title, data.project);
                     break;
                 case 'endSession':
                     await vscode.commands.executeCommand('codetrack.endSession', data.title);
@@ -31,7 +69,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    public updatePlaceholder(title: string) {
+    public UpdateProjects(projects: { [key: string]: string }) {
+        if (this._view) {
+            this._view.webview.postMessage({
+                command: 'updateProjects',
+                projects: projects,
+                workspaceName: vscode.workspace.name || null
+            });
+        }
+    }
+
+    public UpdatePlaceholder(title: string) {
         if (this._view) {
             this._view.webview.postMessage({ 
                 command: 'updatePlaceholder', 
@@ -39,87 +87,4 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             });
         }
     }
-
-    private _getHtmlForWebview(webview: vscode.Webview) {
-        return /*html*/ `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>CodeTrack</title>
-                <style>
-                    body { 
-                        padding: 10px; 
-                        color: var(--vscode-foreground);
-                        background-color: var(--vscode-sidebar-background);
-                    }
-                    button, input[type="text"] {
-                        width: 100%;
-                        padding: 8px;
-                        margin: 5px 0;
-                        border-radius: 2px;
-                        box-sizing: border-box; /* This is the key change */
-                    }
-                    button {
-                        background: var(--vscode-button-background);
-                        color: var(--vscode-button-foreground);
-                        border: none;
-                        cursor: pointer;
-                    }
-                    button:hover {
-                        background: var(--vscode-button-hoverBackground);
-                    }
-                    input[type="text"] {
-                        border: 1px solid var(--vscode-input-border);
-                        background: var(--vscode-input-background);
-                        color: var(--vscode-input-foreground);
-                    }
-                </style>
-            </head>
-            <body>
-                <h2>CodeTrack</h2>
-                <p>Track your coding sessions with Notion.</p>
-                <br>
-                <label for="title">Session Title:</label>
-                <input type="text" id="title" placeholder="Coding Session">
-                <button id="startSessionBtn">Start Session</button>
-                <button id="endSessionBtn">End Session</button>
-
-                <script>
-                    const vscode = acquireVsCodeApi();
-                    let title;
-
-
-                    document.getElementById('startSessionBtn').addEventListener('click', () => {
-                        title = document.getElementById('title').value;
-                        if (!title) {
-                            title = "Coding Session - " + new Date().toLocaleString();
-                        }
-                        vscode.postMessage({ command: 'startSession', title: title });
-                        document.getElementById('title').placeholder = title;
-                    });
-
-                    document.getElementById('endSessionBtn').addEventListener('click', () => {
-                        title = document.getElementById('title').value;
-                        vscode.postMessage({ command: 'endSession', title: title });
-                        document.getElementById('title').value = '';
-                        document.getElementById('title').placeholder = '';
-
-                    });
-                </script>
-            </body>
-            </html>
-        `;
-    }
-}
-
-export function activate(context: vscode.ExtensionContext) {
-    const sidebarProvider = new SidebarProvider(context.extensionUri);
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            "codetrack-view",
-            sidebarProvider
-        )
-    );
 }

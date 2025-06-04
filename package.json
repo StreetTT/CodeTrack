@@ -46,6 +46,18 @@
       {
         "command": "codetrack.endSession",
         "title": "CodeTrack: End Session"
+      },
+      {
+        "command": "codetrack.openPanel",
+        "title": "CodeTrack: Open Settings"
+      },
+      {
+        "command": "codetrack.saveSettings",
+        "title": "CodeTrack: Save Settings"
+      },
+      {
+        "command": "codetrack.clearSettings",
+        "title": "CodeTrack: Clear Settings"
       }
     ],
     "viewsContainers": {
@@ -90,5 +102,9 @@
   "dependencies": {
     "@types/node-fetch": "^2.6.12",
     "node-fetch": "^3.3.2"
-  }
+  },
+  "files": [
+    "out",
+    "resources"
+  ]
 }
